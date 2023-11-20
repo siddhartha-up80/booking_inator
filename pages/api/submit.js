@@ -1,26 +1,27 @@
 export default async function handler(req, res) {
+  const amount = req.body.amount
+  // console.log(amount)
+  // console.log(JSON.stringify({ amount: amount }));
+  const id = req.body.id
+  console.log(id)
+
   if (req.method === "POST") {
     try {
-      const response = await fetch(
-        `https://stg.dhunjam.in/account/admin/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username: "DJ@4", password: "Dhunjam@2023" }),
-        }
-      );
+      const response = await fetch(`https://stg.dhunjam.in/account/admin/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount: amount }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
         res.status(response.status).json({ error: errorData });
       } else {
         const responseData = await response.json();
-        const token = responseData.data.token;
-        const id = responseData.data.id;
 
-        res.status(200).json({ success: true, token, id });
+        res.status(200).json({ success: true, responseData });
       }
     } catch (error) {
       console.error("Error during API request:", error);

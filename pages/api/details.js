@@ -1,7 +1,12 @@
 export default async function handler(req, res) {
+
+    console.log(req.query);
   if (req.method === "GET") {
     try {
-      const response = await fetch(`https://stg.dhunjam.in/account/admin/4`);
+        const { id } = req.query;
+       const response = await fetch(
+         `https://stg.dhunjam.in/account/admin/${id}`
+       );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -9,7 +14,7 @@ export default async function handler(req, res) {
       } else {
         const responseData = await response.json();
 
-        console.log(responseData);
+        // console.log(responseData);
         res.status(200).json({ success: true, responseData: responseData });
       }
     } catch (error) {

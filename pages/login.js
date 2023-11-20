@@ -35,6 +35,7 @@ const Login = () => {
     if (response.success) {
       if (response.token) {
         localStorage.setItem("token", response.token);
+        localStorage.setItem("id", response.id);
         setTimeout(() => {
           router.push(`${process.env.NEXT_PUBLIC_HOST}/`);
         }, 1000);

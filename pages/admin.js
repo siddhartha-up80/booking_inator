@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Radio, Typography } from "@material-tailwind/react";
+import { Spinner } from "@material-tailwind/react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -31,7 +32,10 @@ const Admin = () => {
 
   const getDetails = async () => {
     try {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/details`);
+      const id = localStorage.getItem("id");
+      let res = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/details/?id=${id}`
+      );
       let response = await res.json();
       let Data = response.responseData.data;
       console.log(Data);
@@ -41,10 +45,9 @@ const Admin = () => {
 
       const amount = [];
       amount.push(...Object.values(Data.amount));
-
+      amount.splice(0, 1);
       amount.sort((a, b) => b - a);
-      // const newArray = array.filter((item) => item !== Data.amount.category_6);
-      setAmountData(amount.filter((item) => item !== Data.amount.category_6));
+      setAmountData(amount);
       setCustom(Data.amount.category_6);
     } catch (error) {
       console.error("Error fetching details:", error);
@@ -58,12 +61,15 @@ const Admin = () => {
       setDisableData(true);
     }
   };
-  console.log("disabled:", disableData);
-  //   console.log(amountData);
+  //   console.log("disabled:", disableData);
+  console.log(amountData);
 
   useEffect(() => {
-    getDetails();
-    disableValues();
+    //   getId()
+    setTimeout(() => {
+      getDetails();
+      disableValues();
+    }, 500);
   }, []);
 
   const disableButton = () => {
@@ -74,18 +80,42 @@ const Admin = () => {
     }
   };
   const handleChange = (e) => {
-      
     if (e.target.name == "custom") {
       setCustom(e.target.value);
     }
   };
 
-useEffect(() => {
-  disableButton();
-}, [custom])
-
+  useEffect(() => {
+    disableButton();
+  }, [custom]);
 
   //   console.log("custom:", custom);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const id = localStorage.getItem("id");
+    let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/submit`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: {
+          category_6: custom,
+        },
+        id: id,
+      }),
+    });
+    let response = await res.json();
+    console.log(response);
+
+    if (response.success) {
+      console.log("Done");
+    } else {
+      console.log("Error", response.error);
+    }
+  };
 
   const data = {
     labels: ["1", "2", "3", "4", "5"],
@@ -154,102 +184,111 @@ useEffect(() => {
 
   return (
     <div>
-      <div className="flex justify-center items-center flex-col h-screen gap-5">
-        <div>
-          <span>
-            <h1 className="text-3xl">
-              {details.name}, {details.location} on Dhun Jam
-            </h1>
-          </span>
-        </div>
+      {details ? (
+        <div className="flex justify-center items-center flex-col h-screen gap-5 p-5">
+          <div>
+            <span>
+              <h1 className="text-3xl">
+                {details.name}, {details.location} on Dhun Jam
+              </h1>
+            </span>
+          </div>
 
-        <div>
-          <form onSubmit={() => {}} className="flex flex-col gap-5">
-            <div className="flex flex-row justify-between">
-              <span>
-                Do you want to charge your customers for requesting songs?
-              </span>
-              <span>
-                <Radio
-                  name="type"
-                  label={
-                    <Typography
-                      // color="purple"
-                      className="flex font-medium text-white"
-                    >
-                      Yes
-                    </Typography>
-                  }
-                  className="bg-white"
-                  defaultChecked
-                />
-                <Radio
-                  name="type"
-                  label={
-                    <Typography
-                      //   color="white"
-                      className="flex font-medium text-white"
-                    >
-                      No
-                    </Typography>
-                  }
-                  className="bg-white"
-                />
-              </span>
-            </div>
-            <div className="flex flex-row justify-between">
-              <span>Custom song request amount-</span>
-              <span>
-                <input
-                  type="text"
-                  name="custom"
-                  value={custom}
-                  onChange={handleChange}
-                  className="bg-black text-white border rounded-lg text-center"
-                />
-              </span>
-            </div>
-            <div className="flex flex-row justify-between">
-              <span>Regular song request amounts, from high to low-</span>
-              <span className="">
-                <span className="border text-center rounded-lg px-2 py-1 mx-1">
-                  {amountData[0]}
+          <div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              <div className="flex flex-row justify-between">
+                <span>
+                  Do you want to charge your customers for requesting songs?
                 </span>
-                <span className="border text-center rounded-lg px-2 py-1 mx-1">
-                  {amountData[1]}
+                <span>
+                  <Radio
+                    name="type"
+                    label={
+                      <Typography
+                        // color="purple"
+                        className="flex font-medium text-white"
+                      >
+                        Yes
+                      </Typography>
+                    }
+                    onClick={() => setDisableData(false)}
+                    className="bg-white"
+                    defaultChecked
+                  />
+                  <Radio
+                    name="type"
+                    label={
+                      <Typography
+                        //   color="white"
+                        className="flex font-medium text-white"
+                      >
+                        No
+                      </Typography>
+                    }
+                    onClick={() => setDisableData(true)}
+                    className="bg-white"
+                  />
                 </span>
-                <span className="border text-center rounded-lg px-2 py-1 mx-1">
-                  {amountData[2]}
-                </span>
-                <span className="border text-center rounded-lg px-2 py-1 mx-1">
-                  {amountData[3]}
-                </span>
-              </span>
-            </div>
-
-            {disableData == false && (
-              <div className="relative">
-                <div className="mt-10 -left-20 absolute ">Rupees</div>
-                <div className=" mt-10">
-                  <div className="border-l-2 md:h-[255px] h-[21vh] border-white absolute op-[222px]"></div>
-                  <Bar data={data} options={options} />
-                  <div className="border-t-2 border-white relative -top-7"></div>
-                </div>
               </div>
-            )}
+              <div className="flex flex-row justify-between">
+                <span>Custom song request amount-</span>
+                <span>
+                  <input
+                    type="text"
+                    name="custom"
+                    value={custom}
+                    onChange={handleChange}
+                    disabled={disableData}
+                    className="bg-black text-white border rounded-lg text-center"
+                  />
+                </span>
+              </div>
+              <div className="flex flex-row justify-between">
+                <span>Regular song request amounts, from high to low-</span>
+                <span className="">
+                  <span className="border text-center rounded-lg px-2 py-1 mx-1">
+                    {amountData[0]}
+                  </span>
+                  <span className="border text-center rounded-lg px-2 py-1 mx-1">
+                    {amountData[1]}
+                  </span>
+                  <span className="border text-center rounded-lg px-2 py-1 mx-1">
+                    {amountData[2]}
+                  </span>
+                  <span className="border text-center rounded-lg px-2 py-1 mx-1">
+                    {amountData[3]}
+                  </span>
+                </span>
+              </div>
 
-            <div>
-              <button
-                type="submit"
-                className=" w-full bg-[#6741D9] p-2 rounded-lg disabled disabled:opacity-40"
-                disabled={disableData == true ? true : enableButton == false}
-              >
-                save
-              </button>
-            </div>
-          </form>
+              {disableData == false && (
+                <div className="relative">
+                  <div className="mt-10 -left-20 absolute ">Rupees</div>
+                  <div className=" mt-10">
+                    <div className="border-l-2 md:h-[255px] h-[85%] border-white absolute op-[222px]"></div>
+                    <Bar data={data} options={options} />
+                    <div className="border-t-2 border-white relative -top-7"></div>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <button
+                  type="submit"
+                  className=" w-full bg-[#6741D9] p-2 rounded-lg disabled disabled:opacity-40"
+                  disabled={disableData == true ? true : enableButton == false}
+                >
+                  save
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex justify-center items-center flex-col h-screen">
+          <Spinner className="h-12 w-12" />
+        </div>
+      )}
     </div>
   );
 };
