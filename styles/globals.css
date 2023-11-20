@@ -2,3 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* BarChart.css */
+.chart-container .chartjs-chart .chartjs-axis-y .chartjs-axis-line,
+.chart-container .chartjs-chart .chartjs-axis-x .chartjs-axis-line {
+  stroke: red; /* Custom color for Y-axis and X-axis lines */
+}
