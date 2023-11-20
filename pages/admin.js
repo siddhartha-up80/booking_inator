@@ -30,6 +30,14 @@ const Admin = () => {
   const [enableButton, setEnableButton] = useState(true);
   const [custom, setCustom] = useState(0);
 
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      router.push("/login");
+    }
+  }, []);
+
   const getDetails = async () => {
     try {
       const id = localStorage.getItem("id");
@@ -136,11 +144,11 @@ const Admin = () => {
       x: {
         type: "category",
         labels: [
-          "custom",
-          "category 1",
-          "category 2",
-          "category 3",
-          "category 4",
+          "Custom",
+          "Category 1",
+          "Category 2",
+          "Category 3",
+          "Category 4",
         ],
         scaleLabel: {
           display: true,
@@ -152,6 +160,7 @@ const Admin = () => {
         ticks: {
           color: "white",
         },
+      
       },
       y: {
         beginAtZero: true,
@@ -185,67 +194,67 @@ const Admin = () => {
   return (
     <div>
       {details ? (
-        <div className="flex justify-center items-center flex-col h-screen gap-5 p-5">
+        <div className="flex justify-center items-center flex-col h-screen gap-5 p-5 ">
           <div>
             <span>
-              <h1 className="text-3xl">
+              <h1 className="text-3xl font-bold">
                 {details.name}, {details.location} on Dhun Jam
               </h1>
             </span>
           </div>
 
           <div>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5 ">
               <div className="flex flex-row justify-between">
-                <span>
+                <span className="max-w-[300px]">
                   Do you want to charge your customers for requesting songs?
                 </span>
                 <span>
                   <Radio
                     name="type"
+                   color="white"
                     label={
-                      <Typography
-                        // color="purple"
-                        className="flex font-medium text-white"
-                      >
+                      <Typography className="flex font-medium text-white">
                         Yes
                       </Typography>
                     }
                     onClick={() => setDisableData(false)}
-                    className="bg-white"
+                    className="bg-[#6741D9]"
                     defaultChecked
                   />
                   <Radio
                     name="type"
+                    color="white"
                     label={
-                      <Typography
-                        //   color="white"
-                        className="flex font-medium text-white"
-                      >
+                      <Typography className="flex font-medium text-white">
                         No
                       </Typography>
                     }
                     onClick={() => setDisableData(true)}
-                    className="bg-white"
+                    className="bg-[#6741D9]"
                   />
                 </span>
               </div>
               <div className="flex flex-row justify-between">
-                <span>Custom song request amount-</span>
-                <span>
+                <span className="max-w-[300px]">
+                  Custom song request amount-
+                </span>
+                <span className="max-w-[300px]">
                   <input
                     type="text"
                     name="custom"
                     value={custom}
                     onChange={handleChange}
                     disabled={disableData}
-                    className="bg-black text-white border rounded-lg text-center"
+                    className="bg-black text-white border rounded-lg text-center py-1"
                   />
                 </span>
               </div>
               <div className="flex flex-row justify-between">
-                <span>Regular song request amounts, from high to low-</span>
-                <span className="">
+                <span className="max-w-[300px]">
+                  Regular song request amounts, from high to low-
+                </span>
+                <span className="max-w-[300px]">
                   <span className="border text-center rounded-lg px-2 py-1 mx-1">
                     {amountData[0]}
                   </span>
@@ -265,7 +274,7 @@ const Admin = () => {
                 <div className="relative">
                   <div className="mt-10 -left-20 absolute ">Rupees</div>
                   <div className=" mt-10">
-                    <div className="border-l-2 md:h-[255px] h-[85%] border-white absolute op-[222px]"></div>
+                    <div className="border-l-2 md:h-[77%] h-[74%] border-white absolute op-[222px]"></div>
                     <Bar data={data} options={options} />
                     <div className="border-t-2 border-white relative -top-7"></div>
                   </div>
@@ -278,7 +287,7 @@ const Admin = () => {
                   className=" w-full bg-[#6741D9] p-2 rounded-lg disabled disabled:opacity-40"
                   disabled={disableData == true ? true : enableButton == false}
                 >
-                  save
+                  Save
                 </button>
               </div>
             </form>

@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { Button } from "@material-tailwind/react";
 
 export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      router.push("/login");
-    }
-  }, []);
+  
 
   return (
     <main>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
+      <h1 className="flex justify-center items-center h-screen">
+        <Link href="/login">
+          <Button>Login</Button>
+        </Link>
+      </h1>
     </main>
   );
 }

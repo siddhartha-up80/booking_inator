@@ -7,3 +7,7 @@
 .chart-container .chartjs-chart .chartjs-axis-x .chartjs-axis-line {
   stroke: red; /* Custom color for Y-axis and X-axis lines */
 }
+
+body{
+  font-family: Poppins 
+}

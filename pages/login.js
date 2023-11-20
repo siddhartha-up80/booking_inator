@@ -37,7 +37,7 @@ const Login = () => {
         localStorage.setItem("token", response.token);
         localStorage.setItem("id", response.id);
         setTimeout(() => {
-          router.push(`${process.env.NEXT_PUBLIC_HOST}/`);
+          router.push(`${process.env.NEXT_PUBLIC_HOST}/admin`);
         }, 1000);
       } else {
         localStorage.removeItem("token");
